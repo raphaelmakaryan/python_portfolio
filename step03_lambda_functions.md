@@ -33,6 +33,7 @@ Créez `portfolio_calculs.py` avec des lambdas essentielles :
 3. **Lisibilité** : Nommez vos lambdas de manière explicite
 
 ## 💡 Résultats de rendements attendus avec prix simulés
+Utilisez portfolio_actual_prices_sample.csv pour récupérer des prix actuels simulés
 - **AAPL** : 1500€ → +250€ (+16.7%)
 - **GOOGL** : 12500€ → +500€ (+4.0%)  
 - **TSLA** : 6400€ → -400€ (-6.25%)

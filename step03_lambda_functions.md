@@ -9,6 +9,7 @@ Les fonctions lambda sont parfaites pour les calculs financiers répétitifs. Au
 ## 📚 Ressources utiles
 - [Documentation Python sur les fonctions lambda](https://docs.python.org/3/tutorial/controlflow.html#lambda-expressions)
 - [Real Python - Guide complet sur les fonctions lambda](https://realpython.com/python-lambda/)
+- [4 cas d'usage communs](https://datascientest.com/python-et-fonctions-lambda)
 
 ## 🎯 Objectif
 **Créez des fonctions lambda pour tous les calculs financiers de base sur votre portfolio réel.**

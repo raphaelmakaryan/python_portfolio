@@ -19,7 +19,7 @@ Créez `portfolio_structures.py` qui améliore votre étape 1 :
 
 ### Éléments requis :
 1. **Position** - prend un symbole, une quantité, un prix d'achat et une date d'achat
-2. **Transaction** - prend une date, un symbole, une quantité, un prix et un type
+2. **Transaction** - prend une date, un symbole, une quantité, un prix et un type (achat ou vente)
 3. **Classe Portfolio** - A vous de voir sa structure.
 3. **`Position = namedtuple(...)`** - structure pour chaque action du portfolio
 4. **`convertir_vers_positions(portfolio_dict)`** - convertit les dictionnaires en namedtuples

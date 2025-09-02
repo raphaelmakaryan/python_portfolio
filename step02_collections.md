@@ -1,4 +1,4 @@
-# Étape 2 : Collections - Structurer votre portfolio avec namedtuple
+# Étape 2 : Collections - Structurer votre portfolio avec les collections
 
 ## 📊 Developer Story
 Maintenant que vous pouvez charger votre portfolio depuis des fichiers, vous vous rendez compte que manipuler des dictionnaires partout (`data['symbol']`, `data['quantity']`) devient fastidieux et source d'erreurs. Vous voulez une structure de données plus propre et plus sûre pour représenter vos positions d'actions.

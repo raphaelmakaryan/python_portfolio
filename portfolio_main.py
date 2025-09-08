@@ -3,37 +3,75 @@ from collections import namedtuple
 
 Position = namedtuple('Portfolio', "symbol quantity purchase_price purchase_date value_buy gain_now rendements")
 
+
+class ErreurDonneesPortfolio(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+    def validatePurchase(value):
+        if value < 0:
+            raise ErreurDonneesPortfolio("Vous avez un prix d'achat de 0 !")
+
+    def validateSymbol(value):
+        with open("csv/portfolio_sample.csv", newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            data = []
+            reponse = False
+            for row in reader:
+                data.append(row["symbol"])
+            for verif in data:
+                if (verif == value):
+                    reponse = True
+            if reponse == False:
+                raise ErreurDonneesPortfolio("Vous avez un Symbole inexistant !")
+
+    def validateQuantity(value):
+        if value < 0:
+            raise ErreurDonneesPortfolio("Vous avez une quantité négative !")
+
+
+positions_problematiques = [
+    Position('AAPL', 10, 0.0, '2023-01-15', 0, 0, 0),  # Prix d'achat = 0 !
+    Position('INVALID', 5, 100.0, '2023-02-01', 0, 0, 0),  # Symbole inexistant
+    Position('GOOGL', -10, 2500.0, '2023-03-01', 0, 0, 0)  # Quantité négative !
+]
 """
 positions_problematiques = [
     Position('AAPL', 10, 10.0, '2023-01-15'),  # Prix d'achat = 0 !
     Position('NVDA', 5, 100.0, '2023-02-01'),  # Symbole inexistant
     Position('GOOGL', 10, 2500.0, '2023-03-01')  # Quantité négative !
 ]
-
-positions_problematiques = [
-Position('AAPL', 10, 0.0, '2023-01-15'),  
- Position('INVALID', 5, 100.0, '2023-02-01'), 
-  Position('GOOGL', -10, 2500.0, '2023-03-01')  
-]
 """
 
 
 class Portfolio:
-    def startup(self):
-        data = Portfolio.lire_portfolio_csv("csv/portfolio_sample.csv")
+    def startup(test):
+        data = Portfolio.lire_portfolio_csv("csv/portfolio_sample.csv", test)
         Portfolio.convertir_vers_positions(data)
 
-    def lire_portfolio_csv(nom_du_fichier):
-        with open(nom_du_fichier, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
+    def lire_portfolio_csv(nom_du_fichier, test):
+        if test == False:
+            with open(nom_du_fichier, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                data = []
+                for row in reader:
+                    ErreurDonneesPortfolio.validatePurchase(float(row["purchase_price"]))
+                    ErreurDonneesPortfolio.validateSymbol(row["symbol"])
+                    ErreurDonneesPortfolio.validateQuantity(float(row["quantity"]))
+                    data.append([row["symbol"], row["quantity"], row["purchase_price"], row["purchase_date"], 0, 0, 0])
+                return data
+        else:
             data = []
-            for row in reader:
-                data.append([row["symbol"], row["quantity"], row["purchase_price"], row["purchase_date"], 0, 0, 0])
+            for row in positions_problematiques:
+                ErreurDonneesPortfolio.validatePurchase(float(row.purchase_price))
+                ErreurDonneesPortfolio.validateSymbol(row.symbol)
+                ErreurDonneesPortfolio.validateQuantity(float(row.quantity))
+                data.append([row.symbol, row.quantity, row.purchase_price, row.purchase_date, 0, 0, 0])
             return data
 
     def data_actual_price():
         dataPrice = []
-        valuePortfolio = Portfolio.lire_portfolio_csv("csv/portfolio_actual_prices_sample.csv")
+        valuePortfolio = Portfolio.lire_portfolio_csv("csv/portfolio_actual_prices_sample.csv", False)
         for price in valuePortfolio:
             dataPrice.append(float(price[2]))
         return dataPrice
@@ -49,40 +87,28 @@ class Portfolio:
         Position.value_buy = valueCalcul
         return valueCalcul
 
-    def calculer_gains_portfolio(positions, prix_actuels_dict):
-        def calcul(position, prix_actuels):
-            value = (prix_actuels - float(position.purchase_price)) * float(position.quantity)
-            return value
+    def calculer_gains_portfolio(prix_actuels, purchase_price, quantity):
+        valueCalcul = (prix_actuels - float(purchase_price)) * float(quantity)
+        Position.value_buy = valueCalcul
+        return valueCalcul
 
-        valueCalcul = calcul(positions)
-        Position.gain_now = valueCalcul
-        return list(map(calcul, positions, prix_actuels_dict))
-
-    def calculer_rendements_portfolio(positions, prix_actuels_dict):
-        def calcul(position, prix_actuels):
-            value = round(((prix_actuels - float(position.purchase_price)) / float(position.purchase_price)) * 100, 1)
-            return value
-
-        valueCalcul = calcul(positions)
+    def calculer_rendements_portfolio(prix_actuels, purchase_price):
+        valueCalcul = round(((prix_actuels - float(purchase_price)) / float(purchase_price)) * 100, 1)
         Position.rendements = valueCalcul
-        return list(map(calcul, positions, prix_actuels_dict))
+        return valueCalcul
 
     def calculs(dataValue):
         dataActualPrice = Portfolio.data_actual_price()
+        index = 0
         for i in dataValue:
-            Portfolio.calculer_valeurs_positions(i)
-        """
-            Portfolio.resultat(i.symbol, Portfolio.calculer_valeurs_positions(dataValue),
-                               Portfolio.calculer_gains_portfolio(dataValue, dataActualPrice),
-                               Portfolio.calculer_rendements_portfolio(dataValue, dataActualPrice))
-
-        print("Valeurs d'achat :", Portfolio.calculer_valeurs_positions(dataValue))
-        print("Gains actuels  :", Portfolio.calculer_gains_portfolio(dataValue, dataActualPrice))
-        print("Rendements  :", Portfolio.calculer_rendements_portfolio(dataValue, dataActualPrice))
-        """
+            value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
+            gain = Portfolio.calculer_gains_portfolio(dataActualPrice[index], i.purchase_price, i.quantity)
+            rendement = Portfolio.calculer_rendements_portfolio(dataActualPrice[index], i.purchase_price)
+            Portfolio.resultat(i.symbol, value, gain, rendement)
+            index = index + 1
 
     def resultat(entreprise, valeur, gain, randement):
-        print(entreprise, ":", valeur, "€ ->", gain, "€ (+", randement, "%)")
+        print(entreprise, ":", valeur, "€ ->", gain, "€ (", randement, "%)")
 
 
-Portfolio.startup(self=None)
+Portfolio.startup(True)

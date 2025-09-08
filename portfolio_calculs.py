@@ -73,4 +73,4 @@ def resultat(entreprise, valeur, gain, randement):
     print(entreprise, ":", valeur, "€ ->", gain, "€ (+", randement, "%)")
 
 
-chooseType("json")
+chooseType("csv")

@@ -31,9 +31,9 @@ def data_clean_portfolio(data):
                 [valuePortfolio[0], float(valuePortfolio[1]), float(valuePortfolio[2]), dataActualPrice[indexData]])
         indexData = indexData + 1
 
-    print("Valeurs d'achat :", calculer_valeurs_positions(dataValue))
-    print("Gains actuels  :", calculer_gains_portfolio(dataValue, dataActualPrice))
-    print("Rendements  :", calculer_rendements_portfolio(dataValue, dataActualPrice))
+    #print("Valeurs d'achat :", calculer_valeurs_positions(dataValue))
+    #print("Gains actuels  :", calculer_gains_portfolio(dataValue, dataActualPrice))
+    #print("Rendements  :", calculer_rendements_portfolio(dataValue, dataActualPrice))
 
 
 def calculer_valeurs_positions(positions):

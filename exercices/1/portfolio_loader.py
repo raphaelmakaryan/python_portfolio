@@ -32,9 +32,9 @@ def rendu_propre_json(data):
 
 def afficher_portfolio(portfolio):
     if portfolio == "csv" or portfolio == "CSV":
-        rendu_propre_csv(lire_portfolio_csv("portfolio_sample.csv"))
+        # rendu_propre_csv(lire_portfolio_csv("portfolio_sample.csv"))
     elif portfolio == "json" or portfolio == "JSON":
-        rendu_propre_json(lire_portfolio_json("portfolio_sample.json"))
+        # rendu_propre_json(lire_portfolio_json("portfolio_sample.json"))
 
 
 afficher_portfolio("csv")

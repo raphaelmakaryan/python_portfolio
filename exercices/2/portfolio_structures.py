@@ -23,7 +23,7 @@ def lire_portfolio_json(nom_du_fichier):
 class Portfolio:
     def portfolio_type(typeData):
         if typeData == "csv" or typeData == "CSV":
-            dataCSV = lire_portfolio_csv("portfolio_sample.csv")
+            dataCSV = lire_portfolio_csv("../../csv/portfolio_sample.csv")
             dataArray = []
             for value in dataCSV:
                 dataArray.append([value[0], value[1], value[2], value[3]])
@@ -48,6 +48,6 @@ class Portfolio:
                   "| Date d'achat :", i.purchase_date, "| Type : ", i.type)
 
 
-dataPortfolio = Portfolio.portfolio_type("json")
+dataPortfolio = Portfolio.portfolio_type("csv")
 dictPortfolio = Portfolio.convertir_vers_positions(dataPortfolio)
 displayPortfolio = Portfolio.afficher_positions(dictPortfolio)

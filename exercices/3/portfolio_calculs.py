@@ -26,14 +26,14 @@ def lire_portfolio_json(nom_du_fichier):
 
 def chooseType(portfolio):
     if portfolio == "csv" or portfolio == "CSV":
-        data_clean_portfolio(lire_portfolio_csv("portfolio_sample.csv"), portfolio)
+        data_clean_portfolio(lire_portfolio_csv("../../csv/portfolio_sample.csv"), portfolio)
     elif portfolio == "json" or portfolio == "JSON":
         data_clean_portfolio(lire_portfolio_json("portfolio_sample.json"), portfolio)
 
 
 def data_actual_price():
     dataPrice = []
-    valuePortfolio = lire_portfolio_csv("portfolio_actual_prices_sample.csv")
+    valuePortfolio = lire_portfolio_csv("../../csv/portfolio_actual_prices_sample.csv")
     for price in valuePortfolio:
         dataPrice.append(float(price[2]))
     return dataPrice
@@ -55,8 +55,7 @@ def data_clean_portfolio(data, type):
             indexData = indexData + 1
 
         for i in dataValue:
-            resultat(i[0], valeur_position(i[1], i[2]), gain_absolu(dataActualPrice[indexCalcul], i[2], i[1]),
-                     round(rendement_pourcent(dataActualPrice[indexCalcul], i[2]), 1))
+            resultat(i[0], valeur_position(i[1], i[2]), gain_absolu(dataActualPrice[indexCalcul], i[2], i[1]), round(rendement_pourcent(dataActualPrice[indexCalcul], i[2]), 1))
             indexCalcul = indexCalcul + 1
 
     elif type == "json" or type == "JSON":
@@ -64,9 +63,11 @@ def data_clean_portfolio(data, type):
         indexCalcul = 0
 
         for value in data['positions']:
+            """
             resultat(value["symbol"], valeur_position(value["quantity"], value["purchase_price"]),
                      gain_absolu(dataActualPrice[indexCalcul], value["purchase_price"], value["quantity"]),
                      round(rendement_pourcent(dataActualPrice[indexCalcul], value["purchase_price"]), 2))
+                     """
 
 
 def resultat(entreprise, valeur, gain, randement):

@@ -19,10 +19,15 @@ positions_problematiques = [
     Position('TSLA', 10, 2500.0, '2023-05-01', 0, 0, 0)  # Date correspond pas
 ]
 
+
 class Portfolio:
-    def startup(test):
-        data = Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", test)
-        Portfolio.convertir_vers_positions(data)
+    def __init__(self, positions):
+        self.allPositions = positions
+        Portfolio.convertir_vers_positions(self)
+        Portfolio.__len__(self)
+
+    def __len__(self):
+        print("il y'a", len(self.allPositions), "positions au total")
 
     def charger_portfolio_securise(nom_du_fichier, test):
         if test == False:
@@ -62,10 +67,10 @@ class Portfolio:
             dataPrice.append(float(price[2]))
         return dataPrice
 
-    def convertir_vers_positions(portfolio_dict):
+    def convertir_vers_positions(self):
         data = []
         dataActualPrice = Portfolio.data_actual_price()
-        for i in portfolio_dict:
+        for i in self.allPositions:
             data.append(Position(i[0], i[1], i[2], i[3], i[4], i[5], i[6]))
         Portfolio.calculer_gains_securise(data, dataActualPrice)
 
@@ -90,11 +95,11 @@ class Portfolio:
             value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
             gain = Portfolio.calculer_gains_portfolio(prix_actuels[index], i.purchase_price, i.quantity)
             rendement = Portfolio.calculer_rendements_portfolio(prix_actuels[index], i.purchase_price)
-            Portfolio.resultat(i.symbol, value, gain, rendement)
+            Portfolio.__str__(i.symbol, value, gain, rendement)
             index = index + 1
 
-    def resultat(entreprise, valeur, gain, randement):
+    def __str__(entreprise, valeur, gain, randement):
         print(entreprise, ":", valeur, "€ ->", gain, "€ (", randement, "%)")
 
 
-Portfolio.startup(True)
+Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", True))

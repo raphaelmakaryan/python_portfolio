@@ -24,10 +24,9 @@ class Portfolio:
     def __init__(self, positions):
         self.allPositions = positions
         Portfolio.convertir_vers_positions(self)
-        Portfolio.__len__(self)
 
     def __len__(self):
-        print("il y'a", len(self.allPositions), "positions au total")
+        return len(self.allPositions)  # Retourne simplement la taille
 
     def charger_portfolio_securise(nom_du_fichier, test):
         if test == False:
@@ -95,11 +94,38 @@ class Portfolio:
             value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
             gain = Portfolio.calculer_gains_portfolio(prix_actuels[index], i.purchase_price, i.quantity)
             rendement = Portfolio.calculer_rendements_portfolio(prix_actuels[index], i.purchase_price)
-            Portfolio.__str__(i.symbol, value, gain, rendement)
+            Portfolio.resultat(i.symbol, value, gain, rendement)
             index = index + 1
 
-    def __str__(entreprise, valeur, gain, randement):
+    def resultat(entreprise, valeur, gain, randement):
         print(entreprise, ":", valeur, "€ ->", gain, "€ (", randement, "%)")
 
+    def __str__(self):
+        details = self.afficher_positions()
+        return f"Portfolio avec {len(self)} positions :\n{details}"
 
-Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", True))
+    def obtenir_position(self, symbol):
+        for pos in self.allPositions:
+            if isinstance(pos, Position):
+                if pos.symbol == symbol:
+                    return pos
+            else:
+                if pos[0] == symbol:
+                    return pos
+        return None
+
+    def afficher_positions(self):
+        lignes = []
+        for pos in self.allPositions:
+            if isinstance(pos, Position):
+                lignes.append(
+                    f"{pos.symbol} | Qté: {pos.quantity} | Prix achat: {pos.purchase_price} | Date: {pos.purchase_date}")
+            else:
+                lignes.append(f"{pos[0]} | Qté: {pos[1]} | Prix achat: {pos[2]} | Date: {pos[3]}")
+        return "\n".join(lignes)
+
+portfolioData = Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", True))
+print(len(portfolioData))
+print(portfolioData)
+position = portfolioData.obtenir_position("AAPL")
+print("Recherche AAPL :", position)

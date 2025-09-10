@@ -1,4 +1,5 @@
 import csv
+import time
 from collections import namedtuple
 from main.portfolio_exceptions import *
 
@@ -18,6 +19,17 @@ positions_problematiques = [
     Position('GOOGL', 10, 2500.0, '2023-03-01', 0, 0, 0),  # Quantité négative !
     Position('TSLA', 10, 2500.0, '2023-05-01', 0, 0, 0)  # Date correspond pas
 ]
+
+
+def chronometre(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"Durée : {end - start:.4f} secondes")
+        return result
+
+    return wrapper
 
 
 class Portfolio:
@@ -73,16 +85,19 @@ class Portfolio:
             data.append(Position(i[0], i[1], i[2], i[3], i[4], i[5], i[6]))
         Portfolio.calculer_gains_securise(data, dataActualPrice)
 
+    @chronometre
     def calculer_valeurs_positions(quantity, purchase_price):
         valueCalcul = float(quantity) * float(purchase_price)
         Position.value_buy = valueCalcul
         return valueCalcul
 
+    @chronometre
     def calculer_gains_portfolio(prix_actuels, purchase_price, quantity):
         valueCalcul = (prix_actuels - float(purchase_price)) * float(quantity)
         Position.value_buy = valueCalcul
         return valueCalcul
 
+    @chronometre
     def calculer_rendements_portfolio(prix_actuels, purchase_price):
         valueCalcul = round(((prix_actuels - float(purchase_price)) / float(purchase_price)) * 100, 1)
         Position.rendements = valueCalcul
@@ -124,8 +139,11 @@ class Portfolio:
                 lignes.append(f"{pos[0]} | Qté: {pos[1]} | Prix achat: {pos[2]} | Date: {pos[3]}")
         return "\n".join(lignes)
 
+
 portfolioData = Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", True))
+"""
 print(len(portfolioData))
 print(portfolioData)
 position = portfolioData.obtenir_position("AAPL")
 print("Recherche AAPL :", position)
+"""

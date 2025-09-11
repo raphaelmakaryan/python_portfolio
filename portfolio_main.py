@@ -2,6 +2,7 @@ import csv
 import time
 from collections import namedtuple
 from main.portfolio_exceptions import *
+from main.portfolio_verification import *
 
 Position = namedtuple('Portfolio', "symbol quantity purchase_price purchase_date value_buy gain_now rendements")
 
@@ -12,12 +13,20 @@ positions_problematiques = [
     Position('GOOGL', -10, 2500.0, '2023-03-01', 0, 0, 0),  # Quantité négative !
     Position('TSLA', 10, 2500.0, '2023-0-01', 0, 0, 0)  # Date correspond pas
 ]
+
+positions_problematiques = [
+    Position('AAPL', 10, 0.0, '2023-01-15', 0, 0, 0),  # Prix d'achat = 0 !
+    Position('INVALID', 5, 100.0, '2023-02-01', 0, 0, 0),  # Symbole inexistant
+    Position('GOOGL', -10, 2500.0, '2023-03-01', 0, 0, 0),  # Quantité négative !
+    Position('TSLA', 10, 2500.0, '2023-0-01', 0, 0, 0)  # Date correspond pas
+]
 """
 positions_problematiques = [
-    Position('AAPL', 10, 10.0, '2023-01-15', 0, 0, 0),  # Prix d'achat = 0 !
-    Position('dsdsdsd', 5, 100.0, '2023-02-01', 0, 0, 0),  # Symbole inexistant
-    Position('GOOGL', 10, 2500.0, '2023-03-01', 0, 0, 0),  # Quantité négative !
-    Position('TSLA', 10, 2500.0, '2023-05-01', 0, 0, 0)  # Date correspond pas
+    Position('apple', 10, 10.0, '2023-01-15', 0, 0, 0),  # Prix d'achat = 0 !
+    Position('goog', 5, 100.0, '2023-02-01', 0, 0, 0),  # Symbole inexistant
+    Position('123', 10, 2500.0, '2023-03-01', 0, 0, 0),  # Quantité négative !
+    Position('TOOLONG', 10, 2500.0, '2023-05-01', 0, 0, 0),  # Date correspond pas
+    Position('AA PL', 10, 2500.0, '2023-05-01', 0, 0, 0)  # Date correspond pas
 ]
 
 
@@ -73,10 +82,11 @@ class Portfolio:
 
     def data_actual_price():
         dataPrice = []
-        valuePortfolio = Portfolio.charger_portfolio_securise("csv/portfolio_actual_prices_sample.csv", False)
-        for price in valuePortfolio:
-            dataPrice.append(float(price[2]))
-        return dataPrice
+        with open("csv/portfolio_actual_prices_sample.csv", newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                dataPrice.append(float(row["purchase_price"]))
+            return dataPrice
 
     def convertir_vers_positions(self):
         data = []
@@ -100,14 +110,14 @@ class Portfolio:
         Position.rendements = valueCalcul
         return valueCalcul
 
-    @chronometre
+    # @chronometre
     def calculer_gains_securise(positions, prix_actuels):
         index = 0
         for i in positions:
             value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
             gain = Portfolio.calculer_gains_portfolio(prix_actuels[index], i.purchase_price, i.quantity)
             rendement = Portfolio.calculer_rendements_portfolio(prix_actuels[index], i.purchase_price)
-            Portfolio.resultat(i.symbol, value, gain, rendement)
+            # Portfolio.resultat(i.symbol, value, gain, rendement)
             index = index + 1
 
     def resultat(entreprise, valeur, gain, randement):

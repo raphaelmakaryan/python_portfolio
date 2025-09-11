@@ -2,7 +2,7 @@ import csv
 import time
 from collections import namedtuple
 from main.portfolio_exceptions import *
-from main.portfolio_verification import *
+import yfinance as yf
 
 Position = namedtuple('Portfolio', "symbol quantity purchase_price purchase_date value_buy gain_now rendements")
 
@@ -44,13 +44,13 @@ def chronometre(func):
 class Portfolio:
     def __init__(self, positions):
         self.allPositions = positions
-        Portfolio.convertir_vers_positions(self)
+        # Portfolio.convertir_vers_positions(self)
 
     def __len__(self):
         return len(self.allPositions)  # Retourne simplement la taille
 
-    def charger_portfolio_securise(nom_du_fichier, test):
-        if test == False:
+    def charger_portfolio_securise(nom_du_fichier, use):
+        if use == "normal":
             with open(nom_du_fichier, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 data = []
@@ -66,7 +66,7 @@ class Portfolio:
                     except ErreurDonneesPortfolio as e:
                         print(f"Erreur pour cet position : {row} car {e}")
                 return data
-        else:
+        elif use == "test":
             data = []
             for row in positions_problematiques:
                 try:
@@ -79,6 +79,9 @@ class Portfolio:
                 except ErreurDonneesPortfolio as e:
                     print(f"Erreur pour cet position : {row} car {e}")
             return data
+        elif use == "api":
+            tickers = yf.Tickers(symbolImportant())
+            print(tickers)
 
     def data_actual_price():
         dataPrice = []
@@ -117,7 +120,7 @@ class Portfolio:
             value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
             gain = Portfolio.calculer_gains_portfolio(prix_actuels[index], i.purchase_price, i.quantity)
             rendement = Portfolio.calculer_rendements_portfolio(prix_actuels[index], i.purchase_price)
-            # Portfolio.resultat(i.symbol, value, gain, rendement)
+            Portfolio.resultat(i.symbol, value, gain, rendement)
             index = index + 1
 
     def resultat(entreprise, valeur, gain, randement):
@@ -148,7 +151,7 @@ class Portfolio:
         return "\n".join(lignes)
 
 
-portfolioData = Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", True))
+portfolioData = Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", "api"))
 """
 print(len(portfolioData))
 print(portfolioData)

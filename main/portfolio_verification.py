@@ -1,6 +1,10 @@
 import re
 
 
+def symbolImportant():
+    return ["AAPL", "GOOGL", "MSFT", "TSLA", "NVDA", "AMZN", "META"]
+
+
 def verifier_string(symbole):
     pattern = re.compile("^[a-zA-Z]+$")
     if not re.match(pattern, symbole):

@@ -27,7 +27,7 @@ class SymbolNotFoundError(ErreurDonneesPortfolio):
 def check_symbol(value):
     verification = valider_portfolio_complet(value)
     if verification[0] == True:
-        symbols = ["AAPL", "GOOGL", "MSFT", "TSLA", "NVDA", "AMZN", "META"]
+        symbols = symbolImportant()
         if verification[1] not in symbols:
             raise SymbolNotFoundError("vous avez un symbole inexistant !")
     else:

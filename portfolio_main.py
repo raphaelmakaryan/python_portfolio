@@ -2,7 +2,7 @@ import csv
 import time
 from collections import namedtuple
 from main.portfolio_exceptions import *
-import yfinance as yf
+import requests
 
 Position = namedtuple('Portfolio', "symbol quantity purchase_price purchase_date value_buy gain_now rendements")
 
@@ -80,75 +80,98 @@ class Portfolio:
                     print(f"Erreur pour cet position : {row} car {e}")
             return data
         elif use == "api":
-            tickers = yf.Tickers(symbolImportant())
-            print(tickers)
+            api_key = "4PW15ULFS86UNYEG"
+            allSymbol = ','.join(symbolImportant())
+            print(allSymbol)
+            """
+        url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&SYMBOLS={','.join(symbolImportant())}&apikey={api_key}"
+        response = requests.get(url)
+        data = response.json()
+        print(data)
+        if "Global Quote" in data:
+            quote = data["Global Quote"]
+            price = float(quote["05. price"])
+            print(f"Le prix de l'action {symbol} est de {price} $")
+        else:
+            print("Impossible de récupérer les informations sur le prix de l'action.")
+            """
 
-    def data_actual_price():
-        dataPrice = []
-        with open("csv/portfolio_actual_prices_sample.csv", newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                dataPrice.append(float(row["purchase_price"]))
-            return dataPrice
 
-    def convertir_vers_positions(self):
-        data = []
-        dataActualPrice = Portfolio.data_actual_price()
-        for i in self.allPositions:
-            data.append(Position(i[0], i[1], i[2], i[3], i[4], i[5], i[6]))
-        Portfolio.calculer_gains_securise(data, dataActualPrice)
+def data_actual_price():
+    dataPrice = []
+    with open("csv/portfolio_actual_prices_sample.csv", newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            dataPrice.append(float(row["purchase_price"]))
+        return dataPrice
 
-    def calculer_valeurs_positions(quantity, purchase_price):
-        valueCalcul = float(quantity) * float(purchase_price)
-        Position.value_buy = valueCalcul
-        return valueCalcul
 
-    def calculer_gains_portfolio(prix_actuels, purchase_price, quantity):
-        valueCalcul = (prix_actuels - float(purchase_price)) * float(quantity)
-        Position.value_buy = valueCalcul
-        return valueCalcul
+def convertir_vers_positions(self):
+    data = []
+    dataActualPrice = Portfolio.data_actual_price()
+    for i in self.allPositions:
+        data.append(Position(i[0], i[1], i[2], i[3], i[4], i[5], i[6]))
+    Portfolio.calculer_gains_securise(data, dataActualPrice)
 
-    def calculer_rendements_portfolio(prix_actuels, purchase_price):
-        valueCalcul = round(((prix_actuels - float(purchase_price)) / float(purchase_price)) * 100, 1)
-        Position.rendements = valueCalcul
-        return valueCalcul
 
-    # @chronometre
-    def calculer_gains_securise(positions, prix_actuels):
-        index = 0
-        for i in positions:
-            value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
-            gain = Portfolio.calculer_gains_portfolio(prix_actuels[index], i.purchase_price, i.quantity)
-            rendement = Portfolio.calculer_rendements_portfolio(prix_actuels[index], i.purchase_price)
-            Portfolio.resultat(i.symbol, value, gain, rendement)
-            index = index + 1
+def calculer_valeurs_positions(quantity, purchase_price):
+    valueCalcul = float(quantity) * float(purchase_price)
+    Position.value_buy = valueCalcul
+    return valueCalcul
 
-    def resultat(entreprise, valeur, gain, randement):
-        print(entreprise, ":", valeur, "€ ->", gain, "€ (", randement, "%)")
 
-    def __str__(self):
-        details = self.afficher_positions()
-        return f"Portfolio avec {len(self)} positions :\n{details}"
+def calculer_gains_portfolio(prix_actuels, purchase_price, quantity):
+    valueCalcul = (prix_actuels - float(purchase_price)) * float(quantity)
+    Position.value_buy = valueCalcul
+    return valueCalcul
 
-    def obtenir_position(self, symbol):
-        for pos in self.allPositions:
-            if isinstance(pos, Position):
-                if pos.symbol == symbol:
-                    return pos
-            else:
-                if pos[0] == symbol:
-                    return pos
-        return None
 
-    def afficher_positions(self):
-        lignes = []
-        for pos in self.allPositions:
-            if isinstance(pos, Position):
-                lignes.append(
-                    f"{pos.symbol} | Qté: {pos.quantity} | Prix achat: {pos.purchase_price} | Date: {pos.purchase_date}")
-            else:
-                lignes.append(f"{pos[0]} | Qté: {pos[1]} | Prix achat: {pos[2]} | Date: {pos[3]}")
-        return "\n".join(lignes)
+def calculer_rendements_portfolio(prix_actuels, purchase_price):
+    valueCalcul = round(((prix_actuels - float(purchase_price)) / float(purchase_price)) * 100, 1)
+    Position.rendements = valueCalcul
+    return valueCalcul
+
+
+# @chronometre
+def calculer_gains_securise(positions, prix_actuels):
+    index = 0
+    for i in positions:
+        value = Portfolio.calculer_valeurs_positions(i.quantity, i.purchase_price)
+        gain = Portfolio.calculer_gains_portfolio(prix_actuels[index], i.purchase_price, i.quantity)
+        rendement = Portfolio.calculer_rendements_portfolio(prix_actuels[index], i.purchase_price)
+        Portfolio.resultat(i.symbol, value, gain, rendement)
+        index = index + 1
+
+
+def resultat(entreprise, valeur, gain, randement):
+    print(entreprise, ":", valeur, "€ ->", gain, "€ (", randement, "%)")
+
+
+def __str__(self):
+    details = self.afficher_positions()
+    return f"Portfolio avec {len(self)} positions :\n{details}"
+
+
+def obtenir_position(self, symbol):
+    for pos in self.allPositions:
+        if isinstance(pos, Position):
+            if pos.symbol == symbol:
+                return pos
+        else:
+            if pos[0] == symbol:
+                return pos
+    return None
+
+
+def afficher_positions(self):
+    lignes = []
+    for pos in self.allPositions:
+        if isinstance(pos, Position):
+            lignes.append(
+                f"{pos.symbol} | Qté: {pos.quantity} | Prix achat: {pos.purchase_price} | Date: {pos.purchase_date}")
+        else:
+            lignes.append(f"{pos[0]} | Qté: {pos[1]} | Prix achat: {pos[2]} | Date: {pos[3]}")
+    return "\n".join(lignes)
 
 
 portfolioData = Portfolio(Portfolio.charger_portfolio_securise("csv/portfolio_sample.csv", "api"))

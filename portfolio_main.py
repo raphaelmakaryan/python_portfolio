@@ -85,24 +85,22 @@ class Portfolio:
             data.append(Position(i[0], i[1], i[2], i[3], i[4], i[5], i[6]))
         Portfolio.calculer_gains_securise(data, dataActualPrice)
 
-    @chronometre
     def calculer_valeurs_positions(quantity, purchase_price):
         valueCalcul = float(quantity) * float(purchase_price)
         Position.value_buy = valueCalcul
         return valueCalcul
 
-    @chronometre
     def calculer_gains_portfolio(prix_actuels, purchase_price, quantity):
         valueCalcul = (prix_actuels - float(purchase_price)) * float(quantity)
         Position.value_buy = valueCalcul
         return valueCalcul
 
-    @chronometre
     def calculer_rendements_portfolio(prix_actuels, purchase_price):
         valueCalcul = round(((prix_actuels - float(purchase_price)) / float(purchase_price)) * 100, 1)
         Position.rendements = valueCalcul
         return valueCalcul
 
+    @chronometre
     def calculer_gains_securise(positions, prix_actuels):
         index = 0
         for i in positions:
